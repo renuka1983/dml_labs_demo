@@ -1,26 +1,41 @@
-name: CI Pipeline
+name: CI/CD Pipeline
+
 
 on: [push, pull_request]
 
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-python@v2
+              with:
+                python-version: '3.9'
+            - run: pip install pytest
+            - run: pytest
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest pandas scikit-learn
+    validate:
+        runs-on: ubuntu-latest
+        needs: test
+        steps:
+            - uses: actions/checkout@v2
+            - run: pip install pandas
+            - run: python test_data_validation.py
 
-      - name: Run training script
-        run: python train.py
-        
-      - name: Run tests
-        run: pytest
+
+    train:
+        runs-on: ubuntu-latest
+        needs: validate
+        steps:
+            - uses: actions/checkout@v2
+            - run: pip install pandas scikit-learn
+            - run: python train.py
+
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: train
+        steps:
+            - run: echo "🚀 Simulated deployment completed!"
