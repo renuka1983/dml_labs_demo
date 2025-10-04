@@ -3,7 +3,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
 # Load dataset
-df = pd.read_csv("data.csv")
+df = pd.read_csv("./data/data.csv")
 
 # Preprocessing
 X = df[["feature1", "feature2"]]
